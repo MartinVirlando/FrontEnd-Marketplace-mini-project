@@ -1,6 +1,8 @@
 import { Button, Input, Form } from "antd";
 import { Link } from "react-router-dom";
 
+import FormInput from "../molecules/FormInput";
+
 
 
 interface LoginFormValues {
@@ -20,7 +22,7 @@ const LoginForm = ({ onSubmit, isLoading }: LoginFormProps) => {
 
     return (
         <Form layout="vertical" onFinish={onFinish}>
-            <Form.Item
+            <FormInput
                 name="email"
                 label="Email"
                 rules={[
@@ -30,9 +32,9 @@ const LoginForm = ({ onSubmit, isLoading }: LoginFormProps) => {
             >
                 <Input placeholder="Email" />
 
-            </Form.Item>
+            </FormInput>
 
-            <Form.Item
+            <FormInput
                 name="password"
                 label="Password"
                 rules={[
@@ -40,7 +42,7 @@ const LoginForm = ({ onSubmit, isLoading }: LoginFormProps) => {
                 ]}
             >
                 <Input.Password placeholder="Password" />
-            </Form.Item>
+            </FormInput>
 
             <Button type="primary" htmlType="submit" loading={isLoading}>
                 Login
