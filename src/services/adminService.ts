@@ -19,6 +19,11 @@ export const approveProduct = async (id: number): Promise<Product> => {
     return response.data;
 }
 
+//Approve Semua Produk
+export const approveAllProducts = async (): Promise<void> => {
+    await api.put("/admin/products/approve-all");
+}
+
 //Reject Produk
 export const rejectProduct = async (id: number): Promise<Product> => {
     const response = await api.put(`/admin/products/${id}/reject`);

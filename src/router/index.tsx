@@ -3,6 +3,15 @@ import MainLayout from "../components/templates/MainLayout.tsx";
 import ProtectedRoute from "./protectedRoute.tsx";
 import LoginPage from "../components/pages/LoginPage.tsx";
 import RegisterPage from "../components/pages/RegisterPage.tsx";
+import HomePage from "../components/pages/HomePage.tsx";
+import ProductDetailPage from "../components/pages/ProductDetailPage.tsx";
+import OrderPage from "../components/pages/OrderPage.tsx";
+import CartPage from "../components/pages/CartPage.tsx";
+import ProfilePage from "../components/pages/ProfilePage.tsx";
+import SellerProductsPage from "../components/pages/SellerProductsPage.tsx";
+import AdminDashboardPage from "../components/pages/AdminDashboardPage.tsx";
+import CheckoutPage from "../components/pages/CheckoutPage.tsx";
+import ChatPage from "../components/pages/ChatPage.tsx";
 
 
 const router = createBrowserRouter ([
@@ -12,28 +21,34 @@ const router = createBrowserRouter ([
         children: [
             {
                 path:"/",
-                element:<div>"home"</div>
+                element:<HomePage/>
             },
             {
                 element: <ProtectedRoute/>,
                 children: [
-                    {path: "/profile", element: <div>"profile"</div>},
-                    {path: "/cart", element: <div>"cart"</div>},
+                    {path: "/profile", element: <ProfilePage/>},
+                    {path: "/cart", element: <CartPage/>},
+                    {path: "/orders", element: <OrderPage/>},
+                    {path: "/checkout", element: <CheckoutPage/>},
+                    {path: "/chat", element: <ChatPage/>},
                 ]
             },
             {
                 element: <ProtectedRoute sellerOnly/>,
                 children: [
-                    {path: "/seller/products", element: <div>"seller"</div>},
+                    {path: "/seller/products", element: <SellerProductsPage/>},
                 ]
             },
             {
                 element: <ProtectedRoute adminOnly/>,
                 children: [
-                    {path: "/admin/dashboard", element: <div>"admin"</div>},
+                    {path: "/admin/dashboard", element: <AdminDashboardPage/>},
                 ]
             },
-
+            {
+                path:"/product/:id",
+                element: <ProductDetailPage/>
+            },
         ]
 
     },

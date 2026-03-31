@@ -3,7 +3,7 @@ import { getOrders, getOrderById, createOrder, cancelOrder } from "../services/o
 import { message } from "antd";
 
 //GetOrder
-export const useGetOrder = () => {
+export const useGetOrders = () => {
     return useQuery({
         queryKey: ["order"],
         queryFn: () => getOrders(),

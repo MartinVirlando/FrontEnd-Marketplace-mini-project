@@ -1,6 +1,6 @@
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { message } from "antd";
-import { approveProduct, deleteUser, getDashboardStats, getPendingProducts, getUsers, rejectProduct } from "../services/adminService";
+import { approveProduct, approveAllProducts, deleteUser, getDashboardStats, getPendingProducts, getUsers, rejectProduct } from "../services/adminService";
 
 //getDashBoard
 export const useGetDashboard = () => {
@@ -31,6 +31,21 @@ export const useApproveProduct = () => {
         },
         onError: (error: any) => {
             message.error(error.response?.data?.message || "Product gagal disetujui");
+        }
+    })
+}
+
+//ApproveAllProduct
+export const useApproveAllProducts = () => {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: approveAllProducts,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["pendingProduct"] })
+            message.success("Semua produk berhasil disetujui");
+        },
+        onError: (error: any) => {
+            message.error(error.response?.data?.message || "Gagal menyetujui semua produk");
         }
     })
 }

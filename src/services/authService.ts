@@ -22,8 +22,15 @@ export const logout = async (): Promise<void> => {
    window.location.href = "/login";
 }
 
+//Fungsi Update
+export const updateProfile = async (data: Partial<Pick<User, "name" | "phone">>): Promise<User> => {
+    const response = await api.put("/auth/profile", data);
+    return response.data;
+}
+
 export const getMe = async (): Promise<User> => {
     const response = await api.get("/auth/me");
     return response.data;
 }
+
 
