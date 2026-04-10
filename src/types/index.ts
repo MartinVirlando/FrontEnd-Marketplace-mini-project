@@ -8,13 +8,19 @@ export interface User {
     createdAt?: Date;
 }
 
+export interface Category {
+    id: number;
+    name: string;
+    icon?: string;
+}
+
 export interface Product {
     id: number;
     name: string;
     description: string;
     price: number;
     stock: number;
-    category: string;
+    category: Category;
     categoryId: number;
     images: string[];
     sellerId: number;
@@ -40,11 +46,7 @@ export interface CartItem {
     product: Product;    
 }
 
-export interface Category {
-    id: number;
-    name: string;
-    icon?: string;
-}
+
 
 export interface Order {
     id: number;

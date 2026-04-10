@@ -1,6 +1,6 @@
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import type { ProductParams, ProductRequest } from "../types";
-import { createProduct, deleteProduct, getProduct, getProductById, updateProduct } from "../services/productService";
+import { createProduct, deleteProduct, getProduct, getProductById, updateProduct, getProductBySeller, updateProductStatus } from "../services/productService";
 import { message } from "antd";
 
 
@@ -68,6 +68,31 @@ export const useDeleteProduct = () => {
         },
         onError: (error: any) => {
             message.error(error.response?.data?.message || "Product gagal Dihapus");
+        }
+    })
+}
+
+//GetBySeller
+export const useGetProductBySeller = () => {
+    return useQuery({
+        queryKey: ["sellerProducts"],
+        queryFn: () => getProductBySeller(),
+    })
+}
+
+//UpdateStatus
+export const useUpdateProductStatus = () => {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: ({id, status}: {id: number, status: string}) => updateProductStatus(id, status),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["sellerProducts"]
+            })
+            message.success("Status produk berhasil diupdate");
+        },
+        onError: (error: any) => {
+            message.error(error.response?.data?.message || "Status produk gagal diupdate");
         }
     })
 }

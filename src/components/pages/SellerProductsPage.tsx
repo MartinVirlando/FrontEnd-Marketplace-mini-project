@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button, Table, Tag, Modal, Form, Input, InputNumber, Select, Upload, Space, Spin } from "antd";
 import { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined } from "@ant-design/icons";
-import { useGetProducts, useCreateProduct, useUpdateProduct, useDeleteProduct } from "../../hooks/useProduct";
+import { useGetProductBySeller, useCreateProduct, useUpdateProduct, useDeleteProduct } from "../../hooks/useProduct";
 import { useCategory } from "../../hooks/useCategory";
 import { useAuth } from "../../context/AuthContext";
 import type { Product } from "../../types";
@@ -12,14 +12,14 @@ export default function SellerProductsPage() {
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [form] = Form.useForm();
 
-    const { data: products, isLoading } = useGetProducts();
+  
     const { data: categories } = useCategory();
     const { mutate: createProduct, isPending: creating } = useCreateProduct();
     const { mutate: updateProduct, isPending: updating } = useUpdateProduct();
     const { mutate: deleteProduct } = useDeleteProduct();
 
     // Filter produk
-    const myProducts = products?.filter((p) => p.sellerId === user?.id);
+    const { data: myProducts, isLoading } = useGetProductBySeller();
 
     const handleOpenCreate = () => {
         setEditingProduct(null);

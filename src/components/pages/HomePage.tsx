@@ -75,7 +75,7 @@ export default function HomePage() {
                             name={product.name}
                             price={product.price}
                             imageUrl={product.images?.[0]}
-                            category={product.category}
+                            category={product.category.name}
                         />
                     ))}
                 </div>

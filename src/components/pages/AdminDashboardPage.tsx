@@ -62,11 +62,12 @@ export default function AdminDashboardPage() {
             key: "price",
             render: (price: number) => `Rp ${price.toLocaleString("id-ID")}`,
         },
-        {
-            title: "Kategori",
-            dataIndex: "category",
-            key: "category",
-        },
+        { 
+        title: "Kategori", 
+        dataIndex: "category", 
+        key: "category",
+        render: (category: any) => category?.name || "-"
+    },
         {
             title: "Aksi",
             key: "action",
@@ -182,28 +183,30 @@ export default function AdminDashboardPage() {
                         key: "pending",
                         label: `Produk Pending (${pendingProducts?.length ?? 0})`,
                         children: (
-                            <div className="flex justify-end mb-3">
-                                <Button
-                                    type="primary"
-                                    icon={<CheckOutlined />}
-                                    disabled={!pendingProducts?.length}
-                                    onClick={() => Modal.confirm({
-                                        title: "Setujui Semua Produk",
-                                        content: `Setujui ${pendingProducts?.length} produk sekaligus?`,
-                                        okText: "Setujui Semua",
-                                        onOk: () => approveAllProducts(),
-                                    })}
-                                >
-                                    Approve All
-                                </Button>
-
-                            <Table
-                                dataSource={pendingProducts}
-                                columns={productColumns}
-                                rowKey="id"
-                                loading={loadingPending}
-                                pagination={{ pageSize: 10 }}
-                            />
+                            <div>
+                                <div className="flex justify-end mb-3">
+                                    <Button
+                                        type="primary"
+                                        icon={<CheckOutlined />}
+                                        disabled={!pendingProducts?.length}
+                                        onClick={() => Modal.confirm({
+                                            title: "Setujui Semua Produk",
+                                            content: `Setujui ${pendingProducts?.length} produk sekaligus?`,
+                                            okText: "Setujui Semua",
+                                            onOk: () => approveAllProducts(),
+                                        })}
+                                    >
+                                        Approve All
+                                    </Button>
+                                </div>
+                            
+                                <Table
+                                    dataSource={pendingProducts}
+                                    columns={productColumns}
+                                    rowKey="id"
+                                    loading={loadingPending}
+                                    pagination={{ pageSize: 10 }}
+                                />
 
                             </div>
 

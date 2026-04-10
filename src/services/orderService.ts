@@ -22,9 +22,8 @@ export const createOrder = async (data: OrderRequest): Promise<PaymentResponse> 
 
 // Cancel order
 export const cancelOrder = async (id: number): Promise<Order> => {
-    const response = await api.put(`/orders/${id}/cancel`);
+    const response = await api.delete(`/orders/${id}`);
     return response.data;
 }
-
 
 

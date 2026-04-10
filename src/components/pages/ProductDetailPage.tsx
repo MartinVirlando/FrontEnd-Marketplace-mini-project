@@ -85,7 +85,7 @@ export default function ProductDetailPage() {
                 {/* Info Produk */}
                 <div className="space-y-4">
                     <div>
-                        <Tag color="blue">{product.category}</Tag>
+                        <Tag color="blue">{product.category.name}</Tag>
                         <h1 className="text-2xl font-bold text-gray-800 mt-2">{product.name}</h1>
                     </div>
 

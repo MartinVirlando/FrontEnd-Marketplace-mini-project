@@ -36,7 +36,7 @@ export default function CheckoutPage() {
         createOrder(orderData, {
             onSuccess: (data) => {
                 clearCart(); 
-                navigate(`/payment/${data.orderId}`); 
+                navigate(`/orders`); 
             },
         });
     };

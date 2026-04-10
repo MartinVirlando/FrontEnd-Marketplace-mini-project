@@ -30,6 +30,17 @@ export const deleteProduct = async (id: number): Promise<void> => {
     await api.delete(`/products/${id}`);
 }
 
+//Get By Seller
+export const getProductBySeller = async (): Promise<Product[]> => {
+    const response = await api.get("/seller/products");
+    return response.data;
+}
+
+//Update Status
+export const updateProductStatus = async (id: number, status: string): Promise<Product> => {
+    const response = await api.put(`/products/${id}/status`, {status});
+    return response.data;
+}
 
 
 

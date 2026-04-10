@@ -50,6 +50,11 @@ export default function ChatPage() {
         return msg.senderId === user?.id ? msg.receiver : msg.sender;
     };
 
+    const uniqueConversations = conversations?.filter((conv, index, self) => {
+    const otherUser = getOtherUser(conv);
+    return index === self.findIndex((c) => getOtherUser(c).id === otherUser.id);
+    });
+
     return (
         <div className="h-[calc(100vh-120px)] flex border rounded-xl overflow-hidden bg-white shadow-sm">
 
@@ -65,7 +70,7 @@ export default function ChatPage() {
                     </div>
                 ) : (
                     <div className="overflow-y-auto flex-1">
-                        {conversations?.map((conv) => {
+                        {uniqueConversations?.map((conv) => {
                             const otherUser = getOtherUser(conv);
                             const isSelected = selectedUserId === otherUser.id;
                             const isUnread = !conv.isRead && conv.receiverId === user?.id;
