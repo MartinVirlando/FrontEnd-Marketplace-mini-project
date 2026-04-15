@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button, InputNumber, Rate, Form, Input, Divider, Spin, Tag, Avatar } from "antd";
-import { ShoppingCartOutlined, UserOutlined } from "@ant-design/icons";
+import { ShoppingCartOutlined, UserOutlined, WechatOutlined } from "@ant-design/icons";
 import { useGetProductById } from "../../hooks/useProduct";
 import { useGetReview, useCreateReview } from "../../hooks/useReview";
 import { useCreateCart } from "../../hooks/useCart";
@@ -39,6 +39,10 @@ export default function ProductDetailPage() {
     // Cek apakah user sudah pernah review produk ini
     const alreadyReviewed = reviews?.some((r) => r.user.id === user?.id);
 
+    console.log("reviews:", reviews);
+    console.log("user id:", user?.id);
+    console.log("alreadyReviewed:", alreadyReviewed);
+
     if (isLoading) {
         return (
             <div className="flex justify-center py-20">
@@ -60,17 +64,17 @@ export default function ProductDetailPage() {
                 {/* Gambar Produk */}
                 <div className="space-y-3">
                     <img
-                        src={`http://localhost:8080/${product.images[selectedImage]}`}
+                        src={product.images?.[selectedImage] ? `http://localhost:8080/${product.images[selectedImage]}` : "/placeholder.png"}
                         alt={product.name}
                         className="w-full h-96 object-cover rounded-2xl"
                     />
                     {/* Thumbnail gambar lainnya */}
-                    {product.images.length > 1 && (
+                    {(product.images?.length ?? 0) > 1 && (
                         <div className="flex gap-2">
                             {product.images.map((img, index) => (
                                 <img
                                     key={index}
-                                    src={`http://localhost:8080/${img}`}
+                                    src={img ? `http://localhost:8080/${img}` : "/placeholder.png"}
                                     alt={`thumb-${index}`}
                                     className={`w-16 h-16 object-cover rounded-lg cursor-pointer border-2 ${
                                         selectedImage === index ? "border-blue-500" : "border-transparent"
@@ -126,6 +130,19 @@ export default function ProductDetailPage() {
                             {product.stock === 0 ? "Stok Habis" : "Tambah ke Keranjang"}
                         </Button>
                     </div>
+
+                    {isAuthenticated && user?.id !== product.sellerId && (
+                        <Button
+                            size="large"
+                            icon={<WechatOutlined />}
+                            onClick={() => navigate("/chat", { 
+                                state: { receiverId: product.sellerId, productId: product.id } 
+                            })}
+                            className="w-full"
+                        >
+                            Chat Seller
+                        </Button>
+                    )}
                 </div>
             </div>
 

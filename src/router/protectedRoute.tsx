@@ -7,7 +7,11 @@ type Props = {
 }
 
 export default function ProtectedRoute({adminOnly = false, sellerOnly = false}: Props) {
-    const { isAuthenticated, user } = useAuth();
+    const { isAuthenticated, user, isLoading } = useAuth();
+
+    if (isLoading) {
+        return null;
+    }
 
     if (!isAuthenticated) {
         return <Navigate to="/login" replace />;

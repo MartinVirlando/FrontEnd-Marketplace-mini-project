@@ -66,7 +66,7 @@ export default function OrderPage() {
                         {order.items.map((item) => (
                             <div key={item.id} className="flex items-center gap-3">
                                 <img
-                                    src={`http://localhost:8080/${item.product.images[0]}`}
+                                    src={item.product.images?.[0] ? `http://localhost:8080/${item.product.images[0]}` : "/placeholder.png"}
                                     alt={item.product.name}
                                     className="w-14 h-14 object-cover rounded-lg"
                                 />

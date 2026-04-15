@@ -45,7 +45,7 @@ export default function AdminDashboardPage() {
             render: (name: string, record: Product) => (
                 <div className="flex items-center gap-3">
                     <img
-                        src={`http://localhost:8080/${record.images[0]}`}
+                       src={record.images?.[0] ? `http://localhost:8080/${record.images[0]}` : "/placeholder.png"}
                         alt={name}
                         className="w-12 h-12 object-cover rounded-lg"
                     />

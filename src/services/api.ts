@@ -15,6 +15,10 @@ api.interceptors.request.use(
         if (config.data) {
             config.data = toSnake(config.data);
         }
+        
+        if (config.params) {
+            config.params = toSnake(config.params);
+        }
         return config;
     },
     (error) => Promise.reject(error)

@@ -82,8 +82,8 @@ export interface Notification {
     message: string;
     isRead: boolean;
     type: "order" | "chat" | "product" | "system" ;
+    referenceId?: number;
     createdAt?: Date;
-
 }
 
 export interface LoginRequest {

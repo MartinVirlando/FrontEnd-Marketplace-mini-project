@@ -3,7 +3,9 @@ import { Input, Button, Avatar, Badge, Spin } from "antd";
 import { SendOutlined, UserOutlined } from "@ant-design/icons";
 import { useGetConversation, useGetMessage, useSendMessage, useMarkAsRead } from "../../hooks/useChat";
 import { useAuth } from "../../context/AuthContext";
+import { useLocation, useNavigate } from "react-router-dom";
 import type { Message } from "../../types";
+
 
 export default function ChatPage() {
     const { user } = useAuth();
@@ -15,6 +17,12 @@ export default function ChatPage() {
     const { data: messages, isLoading: loadingMessages } = useGetMessage(selectedUserId ?? 0);
     const { mutate: sendMessage, isPending: sending } = useSendMessage();
     const { mutate: markAsRead } = useMarkAsRead();
+
+    const location = useLocation();
+    const locationState = location.state as { receiverId?: number; productId?: number } | null;
+    const [pendingProductId, setPendingProductId] = useState<number | undefined>(locationState?.productId);
+
+    const navigate = useNavigate();
 
     // Auto scroll ke pesan terbaru
     useEffect(() => {
@@ -32,8 +40,15 @@ export default function ChatPage() {
         if (!inputMessage.trim() || !selectedUserId) return;
 
         sendMessage(
-            { message: inputMessage, receiverId: selectedUserId },
-            { onSuccess: () => setInputMessage("") }
+            { 
+                message: inputMessage, 
+                receiverId: selectedUserId,
+                productId: pendingProductId  // hanya terisi di pesan pertama
+            },
+            { onSuccess: () => {
+                setInputMessage("");
+                setPendingProductId(undefined);
+            }}
         );
     };
 
@@ -49,6 +64,13 @@ export default function ChatPage() {
     const getOtherUser = (msg: Message) => {
         return msg.senderId === user?.id ? msg.receiver : msg.sender;
     };
+
+    // Auto select user dari navigate ProductDetail
+    useEffect(() => {
+        if (locationState?.receiverId) {
+            setSelectedUserId(locationState.receiverId);
+        }
+    }, []);
 
     const uniqueConversations = conversations?.filter((conv, index, self) => {
     const otherUser = getOtherUser(conv);
@@ -134,9 +156,11 @@ export default function ChatPage() {
                                         {/* Konteks produk jika ada */}
                                         <div className="space-y-1 max-w-xs">
                                             {msg.product && (
-                                                <div className="text-xs bg-gray-100 rounded-lg p-2 flex items-center gap-2">
+                                                <div 
+                                                    className="text-xs bg-gray-100 rounded-lg p-2 flex items-center gap-2"
+                                                    onClick={() => navigate(`/product/${msg.product!.id}`)}>
                                                     <img
-                                                        src={`http://localhost:8080/${msg.product.images[0]}`}
+                                                        src={msg.product?.images?.[0] ? `http://localhost:8080/${msg.product.images[0]}` : "/placeholder.png"}
                                                         alt={msg.product.name}
                                                         className="w-8 h-8 object-cover rounded"
                                                     />

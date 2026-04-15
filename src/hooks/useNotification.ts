@@ -1,6 +1,6 @@
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { message } from "antd";
-import { getNotifications, markAllAsRead, markAsRead } from "../services/notificationService";
+import { deleteNotification, getNotifications, markAllAsRead, markAsRead } from "../services/notificationService";
 
 //GetNotif
 export const useGetNotif = () => {
@@ -40,6 +40,20 @@ export const useMarkAllAsRead = () => {
         },
         onError: (error: any) => {
             message.error(error.response?.data?.message || "Semua notifikasi gagal dibaca");
+        }
+    })
+}
+
+//Delete
+export const useDeleteNotification = () => {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: deleteNotification,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["notif"] })
+        },
+        onError: (error: any) => {
+            message.error(error.response?.data?.message || "Notifikasi gagal dihapus");
         }
     })
 }

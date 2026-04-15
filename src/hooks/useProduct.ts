@@ -42,10 +42,9 @@ export const useUpdateProduct = () => {
     const queryClient = useQueryClient()
     return useMutation({
         mutationFn: ({id, data}: {id: number, data: ProductRequest}) => updateProduct(id, data),
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["products"]
-            })
+       onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["products"] })
+            queryClient.invalidateQueries({ queryKey: ["sellerProducts"] }) // tambah ini
             message.success("Product berhasil diupdate");
         },
         onError: (error: any) => {

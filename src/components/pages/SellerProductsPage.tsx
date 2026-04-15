@@ -81,7 +81,7 @@ export default function SellerProductsPage() {
             render: (name: string, record: Product) => (
                 <div className="flex items-center gap-3">
                     <img
-                        src={`http://localhost:8080/${record.images[0]}`}
+                        src={record.images?.[0] ? `http://localhost:8080/${record.images[0]}` : "/placeholder.png"}
                         alt={name}
                         className="w-12 h-12 object-cover rounded-lg"
                     />
@@ -172,6 +172,7 @@ export default function SellerProductsPage() {
                             className="w-full"
                             min={0}
                             formatter={(val) => `Rp ${val}`.replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
+                            parser={(val) => val?.replace(/Rp\s?|[.]/g, "") as any}
                             placeholder="Harga produk"
                         />
                     </Form.Item>
