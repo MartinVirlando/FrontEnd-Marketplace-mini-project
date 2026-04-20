@@ -23,7 +23,7 @@ export const logout = async (): Promise<void> => {
 }
 
 //Fungsi Update
-export const updateProfile = async (data: Partial<Pick<User, "name" | "phone">>): Promise<User> => {
+export const updateProfile = async (data: Partial<Pick<User, "name" | "phone" | "avatar">>): Promise<User> => {
     const response = await api.put("/auth/me", data);
     return response.data;
 }

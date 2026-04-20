@@ -103,7 +103,7 @@ export default function ProductDetailPage() {
 
                     {/* Info Seller */}
                     <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
-                        <Avatar icon={<UserOutlined />} src={product.seller.avatar} />
+                        <Avatar icon={<UserOutlined />} src={product.seller.avatar ? `http://localhost:8080/${product.seller.avatar}` : undefined} />
                         <div>
                             <p className="text-xs text-gray-400">Sold by</p>
                             <p className="text-sm font-semibold">{product.seller.name}</p>
@@ -176,7 +176,7 @@ export default function ProductDetailPage() {
                         {reviews.map((review) => (
                             <div key={review.id} className="p-4 border rounded-xl space-y-1">
                                 <div className="flex items-center gap-2">
-                                    <Avatar icon={<UserOutlined />} src={review.user.avatar} size="small" />
+                                    <Avatar icon={<UserOutlined />} src={review.user.avatar ? `http://localhost:8080/${review.user.avatar}` : undefined} size="small" />
                                     <span className="font-semibold text-sm">{review.user.name}</span>
                                 </div>
                                 <Rate disabled value={review.rating} className="text-sm" />

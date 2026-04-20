@@ -246,7 +246,7 @@ export default function MainLayout() {
                             >
                                 <Avatar
                                     icon={<UserOutlined />}
-                                    src={user?.avatar}
+                                    src={user?.avatar ? `http://localhost:8080/${user.avatar}` : undefined}
                                     className="cursor-pointer bg-blue-500"
                                 />
                             </Dropdown>

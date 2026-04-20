@@ -1,21 +1,20 @@
 import { Form, Input, Button, Divider, Spin } from "antd";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useGetCart, useClearCart } from "../../hooks/useCart";
 import { useCreateOrder } from "../../hooks/useOrder";
-import type { OrderRequest } from "../../types";
+import type { OrderRequest, CartItem } from "../../types";
 
 export default function CheckoutPage() {
     const navigate = useNavigate();
     const [form] = Form.useForm();
 
-    const { data: cartItems, isLoading } = useGetCart();
     const { mutate: createOrder, isPending } = useCreateOrder();
-    const { mutate: clearCart } = useClearCart();
+
+    const location = useLocation();
+    const selectedItems: CartItem[] = location.state?.selectedItems ?? [];
 
     // Total harga
-    const totalPrice = cartItems?.reduce((acc, item) => {
-        return acc + item.product.price * item.quantity;
-    }, 0) ?? 0;
+    const totalPrice = selectedItems.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
 
     const handleSubmit = (values: {
         shippingAddress: string;
@@ -23,10 +22,10 @@ export default function CheckoutPage() {
         province: string;
         postalCode: string;
     }) => {
-        if (!cartItems || cartItems.length === 0) return;
+        if (selectedItems.length === 0) return;
 
         const orderData: OrderRequest = {
-            items: cartItems,
+            items: selectedItems,
             shippingAddress: values.shippingAddress,
             city: values.city,
             province: values.province,
@@ -35,26 +34,14 @@ export default function CheckoutPage() {
 
         createOrder(orderData, {
             onSuccess: (data) => {
-                clearCart(); 
                 navigate(`/orders`); 
             },
         });
     };
 
-    if (isLoading) {
-        return (
-            <div className="flex justify-center py-20">
-                <Spin size="large" />
-            </div>
-        );
-    }
 
-    if (!cartItems || cartItems.length === 0) {
-        return (
-            <div className="text-center py-20 text-gray-400">
-                Your cart is empty
-            </div>
-        );
+    if (selectedItems.length === 0) {   
+    return <div className="text-center py-20 text-gray-400">No items selected</div>;
     }
 
     return (
@@ -115,7 +102,7 @@ export default function CheckoutPage() {
                 <div className="bg-white rounded-xl shadow-sm p-6 h-fit">
                     <h2 className="font-semibold mb-4">Order Summary</h2>
                     <div className="space-y-3">
-                        {cartItems.map((item) => (
+                        {selectedItems.map((item) => (
                             <div key={item.id} className="flex justify-between text-sm">
                                 <span className="text-gray-600">
                                     {item.product.name} x{item.quantity}

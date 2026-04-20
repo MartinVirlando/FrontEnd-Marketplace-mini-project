@@ -1,8 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button, Form, Input, Avatar, Spin } from "antd";
-import { UserOutlined } from "@ant-design/icons";
+import { UserOutlined, CameraOutlined } from "@ant-design/icons";
 import { useGetMe, useUpdateProfile } from "../../hooks/useAuth";
 import { useAuth } from "../../context/AuthContext";
+import api from "../../services/api";
 
 export default function ProfilePage() {
     const [form] = Form.useForm();
@@ -10,6 +11,8 @@ export default function ProfilePage() {
 
     const { data: user, isLoading } = useGetMe();
     const { mutate: updateProfile, isPending } = useUpdateProfile();
+
+    const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
 
     useEffect(() => {
@@ -22,14 +25,36 @@ export default function ProfilePage() {
     }, [user, form]);
 
     const handleSubmit = (values: { name: string; phone?: string }) => {
-        updateProfile(values, {
+        updateProfile({ ...values, avatar: user?.avatar }, {
             onSuccess: (updatedUser) => {
-                
-                if (contextUser) {
-                    login(localStorage.getItem("token")!, updatedUser);
-                }
+                if (contextUser) login(localStorage.getItem("token")!, updatedUser);
             },
         });
+    };
+
+    const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append("image", file);
+
+        setUploadingAvatar(true);
+        try {
+            const res = await api.post("/upload", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+            const avatarPath = res.data.path;
+            updateProfile({ name: user?.name!, phone: user?.phone, avatar: avatarPath }, {
+                onSuccess: (updatedUser) => {
+                    if (contextUser) login(localStorage.getItem("token")!, updatedUser);
+                },
+            });
+        } catch {
+            // handle error
+        } finally {
+            setUploadingAvatar(false);
+        }
     };
 
     if (isLoading) {
@@ -45,20 +70,23 @@ export default function ProfilePage() {
             <h1 className="text-2xl font-bold">My Profile</h1>
 
             {/* Avatar */}
-            <div className="flex flex-col items-center gap-3 py-6 bg-white rounded-xl shadow-sm">
+            <div className="relative">
                 <Avatar
                     size={80}
                     icon={<UserOutlined />}
-                    src={user?.avatar}
+                    src={user?.avatar ? `http://localhost:8080/${user.avatar}` : undefined}
                     className="bg-blue-500"
                 />
-                <div className="text-center">
-                    <p className="font-bold text-lg">{user?.name}</p>
-                    <p className="text-gray-400 text-sm">{user?.email}</p>
-                    <p className="text-xs mt-1 px-2 py-0.5 bg-blue-50 text-blue-500 rounded-full inline-block capitalize">
-                        {user?.role}
-                    </p>
-                </div>
+                <label className="absolute bottom-0 right-0 bg-white rounded-full p-1 shadow cursor-pointer hover:bg-gray-50">
+                    <CameraOutlined className="text-gray-600" />
+                    <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleAvatarUpload}
+                        disabled={uploadingAvatar}
+                    />
+                </label>
             </div>
 
             {/* Form Edit Profile */}

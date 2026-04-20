@@ -1,6 +1,6 @@
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import type { ProductParams, ProductRequest } from "../types";
-import { createProduct, deleteProduct, getProduct, getProductById, updateProduct, getProductBySeller, updateProductStatus } from "../services/productService";
+import { createProduct, deleteProduct, uploadImage, getProduct, getProductById, updateProduct, getProductBySeller, updateProductStatus } from "../services/productService";
 import { message } from "antd";
 
 
@@ -95,3 +95,13 @@ export const useUpdateProductStatus = () => {
         }
     })
 }
+
+//Upload Image
+export const useUploadImage = () => {
+    return useMutation({
+        mutationFn: uploadImage,
+        onError: () => {
+            message.error("Gagal upload gambar");
+        },
+    });
+};

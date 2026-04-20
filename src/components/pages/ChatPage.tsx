@@ -106,7 +106,7 @@ export default function ChatPage() {
                                     onClick={() => setSelectedUserId(otherUser.id)}
                                 >
                                     <Badge dot={isUnread}>
-                                        <Avatar icon={<UserOutlined />} src={otherUser.avatar} />
+                                        <Avatar icon={<UserOutlined />} src={otherUser.avatar ? `http://localhost:8080/${otherUser.avatar}` : undefined} />
                                     </Badge>
                                     <div className="flex-1 min-w-0">
                                         <p className={`text-sm truncate ${isUnread ? "font-bold" : "font-semibold"}`}>
@@ -129,7 +129,7 @@ export default function ChatPage() {
 
                     {/* Header Chat */}
                     <div className="p-4 border-b flex items-center gap-3">
-                        <Avatar icon={<UserOutlined />} />
+                        <Avatar icon={<UserOutlined />} src={conversations?.find((c) => getOtherUser(c).id === selectedUserId) ? `http://localhost:8080/${getOtherUser(conversations.find((c) => getOtherUser(c).id === selectedUserId)!).avatar}` : undefined} />
                         <p className="font-semibold">
                             {conversations?.find((c) => getOtherUser(c).id === selectedUserId)
                                 ? getOtherUser(

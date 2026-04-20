@@ -42,5 +42,16 @@ export const updateProductStatus = async (id: number, status: string): Promise<P
     return response.data;
 }
 
+// Upload Image
+export const uploadImage = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append("image", file);
+    const response = await api.post("/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response.data.path;
+};
+
+
 
 

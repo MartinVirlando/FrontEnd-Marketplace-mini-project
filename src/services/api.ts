@@ -12,9 +12,10 @@ api.interceptors.request.use(
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
-        if (config.data) {
+
+        if (config.data && !(config.data instanceof FormData)) {
             config.data = toSnake(config.data);
-        }
+        }   
         
         if (config.params) {
             config.params = toSnake(config.params);

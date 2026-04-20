@@ -1,29 +1,28 @@
 import { useState } from "react";
 import { Button, Table, Tag, Modal, Form, Input, InputNumber, Select, Upload, Space, Spin } from "antd";
-import { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined } from "@ant-design/icons";
-import { useGetProductBySeller, useCreateProduct, useUpdateProduct, useDeleteProduct } from "../../hooks/useProduct";
+import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { useGetProductBySeller, useCreateProduct, useUpdateProduct, useDeleteProduct, useUploadImage } from "../../hooks/useProduct";
 import { useCategory } from "../../hooks/useCategory";
-import { useAuth } from "../../context/AuthContext";
 import type { Product } from "../../types";
+import type { UploadFile } from "antd";
 
 export default function SellerProductsPage() {
-    const { user } = useAuth();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [form] = Form.useForm();
+    const [fileList, setFileList] = useState<UploadFile[]>([]);
 
-  
     const { data: categories } = useCategory();
     const { mutate: createProduct, isPending: creating } = useCreateProduct();
     const { mutate: updateProduct, isPending: updating } = useUpdateProduct();
     const { mutate: deleteProduct } = useDeleteProduct();
-
-    // Filter produk
+    const { mutateAsync: uploadImage, isPending: uploading } = useUploadImage();
     const { data: myProducts, isLoading } = useGetProductBySeller();
 
     const handleOpenCreate = () => {
         setEditingProduct(null);
         form.resetFields();
+        setFileList([]);
         setIsModalOpen(true);
     };
 
@@ -36,19 +35,42 @@ export default function SellerProductsPage() {
             stock: product.stock,
             categoryId: product.categoryId,
         });
+        setFileList(
+            product.images?.map((img, index) => ({
+                uid: String(index),
+                name: img,
+                status: "done" as const,
+                url: `http://localhost:8080/${img}`,
+            })) ?? []
+        );
         setIsModalOpen(true);
     };
 
-    const handleSubmit = (values: any) => {
+    const handleSubmit = async (values: any) => {
+        const uploadedPaths: string[] = [];
+
+        for (const file of fileList) {
+            if (file.url) {
+                // Gambar lama, ambil path dari name
+                uploadedPaths.push(file.name);
+            } else if (file.originFileObj) {
+                // Gambar baru, upload dulu
+                const path = await uploadImage(file.originFileObj);
+                uploadedPaths.push(path);
+            }
+        }
+
+        const productData = { ...values, images: uploadedPaths };
+
         if (editingProduct) {
             updateProduct(
-                { id: editingProduct.id, data: values },
-                { onSuccess: () => setIsModalOpen(false) }
+                { id: editingProduct.id, data: productData },
+                { onSuccess: () => { setIsModalOpen(false); setFileList([]); } }
             );
         } else {
             createProduct(
-                { ...values, images: [] },
-                { onSuccess: () => setIsModalOpen(false) }
+                productData,
+                { onSuccess: () => { setIsModalOpen(false); setFileList([]); } }
             );
         }
     };
@@ -95,11 +117,7 @@ export default function SellerProductsPage() {
             key: "price",
             render: (price: number) => `Rp ${price.toLocaleString("id-ID")}`,
         },
-        {
-            title: "Stok",
-            dataIndex: "stock",
-            key: "stock",
-        },
+        { title: "Stok", dataIndex: "stock", key: "stock" },
         {
             title: "Status",
             dataIndex: "status",
@@ -113,26 +131,15 @@ export default function SellerProductsPage() {
             key: "action",
             render: (_: any, record: Product) => (
                 <Space>
-                    <Button
-                        icon={<EditOutlined />}
-                        onClick={() => handleOpenEdit(record)}
-                    />
-                    <Button
-                        danger
-                        icon={<DeleteOutlined />}
-                        onClick={() => handleDelete(record.id)}
-                    />
+                    <Button icon={<EditOutlined />} onClick={() => handleOpenEdit(record)} />
+                    <Button danger icon={<DeleteOutlined />} onClick={() => handleDelete(record.id)} />
                 </Space>
             ),
         },
     ];
 
     if (isLoading) {
-        return (
-            <div className="flex justify-center py-20">
-                <Spin size="large" />
-            </div>
-        );
+        return <div className="flex justify-center py-20"><Spin size="large" /></div>;
     }
 
     return (
@@ -151,11 +158,10 @@ export default function SellerProductsPage() {
                 pagination={{ pageSize: 10 }}
             />
 
-            {/* Modal Create / Edit Produk */}
             <Modal
                 title={editingProduct ? "Edit Produk" : "Tambah Produk"}
                 open={isModalOpen}
-                onCancel={() => setIsModalOpen(false)}
+                onCancel={() => { setIsModalOpen(false); setFileList([]); }}
                 footer={null}
             >
                 <Form form={form} layout="vertical" onFinish={handleSubmit}>
@@ -191,12 +197,31 @@ export default function SellerProductsPage() {
                         </Select>
                     </Form.Item>
 
+                    {/* Upload Gambar */}
+                    <Form.Item label="Gambar Produk">
+                        <Upload
+                            listType="picture-card"
+                            fileList={fileList}
+                            beforeUpload={() => false}
+                            onChange={({ fileList }) => setFileList(fileList)}
+                            accept="image/*"
+                            multiple
+                        >
+                            {fileList.length < 5 && (
+                                <div>
+                                    <PlusOutlined />
+                                    <div className="mt-1 text-xs">Upload</div>
+                                </div>
+                            )}
+                        </Upload>
+                    </Form.Item>
+
                     <div className="flex justify-end gap-2 mt-4">
-                        <Button onClick={() => setIsModalOpen(false)}>Cancel</Button>
+                        <Button onClick={() => { setIsModalOpen(false); setFileList([]); }}>Cancel</Button>
                         <Button
                             type="primary"
                             htmlType="submit"
-                            loading={creating || updating}
+                            loading={creating || updating || uploading}
                         >
                             {editingProduct ? "Simpan Perubahan" : "Tambah Produk"}
                         </Button>
